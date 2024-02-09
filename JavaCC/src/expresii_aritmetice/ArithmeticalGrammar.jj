@@ -1,0 +1,141 @@
+options
+{
+  static = true;
+}
+
+PARSER_BEGIN(ArithmeticalGrammar)
+package expresii_aritmetice;
+
+public class ArithmeticalGrammar
+{
+  public static void main(String args []) throws ParseException
+  {
+    ArithmeticalGrammar parser = new ArithmeticalGrammar(System.in);
+    while (true)
+    {
+     System.out.println("Citire din fisier:");
+      try
+      {
+        switch (ArithmeticalGrammar.one_line())
+        {
+          case 0 : 
+            System.out.println("Corect.");
+            break;
+          case 1 : 
+            System.out.println("La revedere.");
+            break;
+          default : 
+            break;
+        }
+      }
+      catch (Exception e)
+      {
+        System.out.println("Nu este corect.");
+        System.out.println(e.getMessage());
+        ArithmeticalGrammar.ReInit(System.in);
+      }
+      catch (Error e)
+      {
+        System.out.println("Gresit.");
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(ArithmeticalGrammar)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+
+|   < OR : "||" >
+| < AND : "&&" >
+| < NOT : "!" >
+| < EQUAL : "=" >
+
+| <  AT_SIGN : "@" >
+| <  POUND_SIGN : "#" >
+| <  DOLLAR_SIGN : "$" >
+| <  PERCENT_SIGN : "%" >
+| <  CARET : "^" >
+| <  AMPERSAND : "&" >
+| <  TILDE : "~" >
+| <  LESS_THAN : "<" >
+| <  GREATER_THAN : ">" >
+| <  QUESTION_MARK : "?" >
+| <  COLON : ":" >
+| <  LEFT_CURLY_BARCE : "{" >
+| <  RIGHT_CURLY_BRACE : "}" >
+| <  DOT : "." >
+| <  COMMA : "," >
+| < LL : ["a"-"z", "A"-"Z"] >
+}
+
+TOKEN :
+{
+ < CONSTANT : (["0"-"9"])+ ( "." (["0"-"9"])+ )? >
+}
+
+int one_line() :
+{}
+{
+  expression() ";"
+  {
+    return 0;
+  }
+| ";"
+  {
+    return 1;
+  }
+}
+
+void expression():
+{}
+{
+  term()
+  (
+    ( <PLUS> term() | <MINUS> term() )
+  )*
+}
+
+void term():
+{}
+{
+  factor()
+  (
+    ( <MULTIPLY> factor() | <DIVIDE> factor() )
+  )*
+}
+
+void factor() :
+{}
+{
+  unary() ( <MULTIPLY> unary() | <DIVIDE> unary() )*
+}
+
+void unary() :
+{}
+{
+  < MINUS > element()
+| element()
+}
+
+void element() :
+{}
+{
+  < CONSTANT >
+| "(" expression() ")"
+}

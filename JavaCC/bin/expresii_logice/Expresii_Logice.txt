@@ -1,0 +1,18 @@
+(a || b;
+a && b ? c;
+$a;
+
+true || !;
+!a;
+a && b;
+!(true || false);
+!(true || false false true;
+a && b || c;
+!a || b && c;
+a || (b && !c);
+!(a && b) || (c && d);
+!a;
+a || m ? c;
+!a | b && c;
+a && b | c;
+a & c;

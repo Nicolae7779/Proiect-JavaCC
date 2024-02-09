@@ -1,0 +1,179 @@
+options
+{
+  static = true;
+}
+
+PARSER_BEGIN(LogicalGrammar)
+package expresii_logice;
+
+public class LogicalGrammar
+{
+  public static void main(String args []) throws ParseException
+  {
+    LogicalGrammar parser = new LogicalGrammar(System.in);
+    while (true)
+    {
+      System.out.println("Citire din fisier:");
+      //System.out.print("Scrie o expresie logica: ");
+      try
+      {
+        switch (LogicalGrammar.one_line())
+        {
+          case 0 : 
+            System.out.println("Corect.");
+             System.out.println();
+            break;
+          case 1 : 
+            System.out.println("La revedere.");
+             System.out.println();
+            break;
+          default : 
+            break;
+        }
+      }
+      catch (Exception e)
+      {
+        System.out.println("Nu este corect.");
+         System.out.println();
+        System.out.println(e.getMessage());
+        LogicalGrammar.ReInit(System.in);
+      }
+      catch (Error e)
+      {
+        System.out.println("Gresit.");
+         System.out.println();
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(LogicalGrammar)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < OR : "||" >
+| < AND : "&&" >
+| < NOT : "!" >
+| < EQUAL : "==" >
+
+| <  AT_SIGN : "@" >
+| <  POUND_SIGN : "#" >
+| <  DOLLAR_SIGN : "$" >
+| <  PERCENT_SIGN : "%" >
+| <  CARET : "^" >
+| <  AMPERSAND : "&" >
+| <  ASTERISK : "*" >
+| <  FORWARD_SLASH : "/" >
+| <  TILDE : "~" >
+| <  LESS_THAN : "<" >
+| <  GREATER_THAN : ">" >
+| <  QUESTION_MARK : "?" >
+| <  COLON : ":" >
+| <  LEFT_CURLY_BARCE : "{" >
+| <  RIGHT_CURLY_BRACE : "}" >
+| <  DOT : "." >
+| <  COMMA : "," >
+}
+
+TOKEN :
+{
+  < IDENTIFIER : (["a"-"z", "A"-"Z"])+ >
+}
+
+int one_line() :
+{}
+{
+  logicalExpression() ";"
+  {
+    return 0;
+  }
+| ";"
+  {
+    return 1;
+  }
+}
+
+void logicalExpression() :
+{}
+{
+  condition()
+}
+
+void condition() :
+{}
+{
+  logicalOrExpr()
+}
+
+void logicalOrExpr() :
+{}
+{
+  logicalAndExpr()
+  (
+    < OR > logicalAndExpr()
+  )*
+}
+
+void logicalAndExpr() :
+{}
+{
+  logExp()
+  (
+    < AND > logExp()
+  )*
+}
+
+void logExp() :
+{}
+{
+  logExpTerm() ("||" logExpTerm())*
+}
+
+void logExpTerm() :
+{}
+{
+  logExpFactor() ("&&" logExpFactor())*
+}
+
+void logExpFactor() :
+{}
+{
+  "(" logExp() ")"
+| "!" logExpFactor()
+| relationalExpr()
+| "true"
+| "false"
+
+
+
+}
+
+void relationalExpr() :
+{}
+{
+ primaryExpr()
+  (
+    < NOT > primaryExpr()
+  | < AND > primaryExpr()
+  | < OR  > primaryExpr()
+  | < EQUAL > primaryExpr()
+  )*
+}
+
+void primaryExpr() :
+{}
+{
+  < IDENTIFIER >
+| < NOT > < IDENTIFIER >
+| "(" logicalOrExpr() ")"
+}

@@ -1,0 +1,136 @@
+options
+{
+  STATIC = true;
+}
+
+PARSER_BEGIN(RelationalGrammar)
+package expresii_relationale;
+
+public class RelationalGrammar {
+  public static void main(String args []) throws ParseException {
+    RelationalGrammar parser = new RelationalGrammar(System.in);
+    while (true) {
+      System.out.println("Reading from standard input...");
+      System.out.print("Enter an expression: ");
+      try {
+        switch (RelationalGrammar.one_line()) {
+          case 0:
+            System.out.println("OK.");
+            break;
+          case 1:
+            System.out.println("Goodbye.");
+            return;
+          default:
+            break;
+        }
+      } catch (Exception e) {
+        System.out.println("NOK.");
+        System.out.println(e.getMessage());
+        RelationalGrammar.ReInit(System.in);
+      } catch (Error e) {
+        System.out.println("Oops.");
+        System.out.println(e.getMessage());
+        break;
+      }
+    }
+  }
+}
+
+PARSER_END(RelationalGrammar)
+
+SKIP:
+{
+  " "
+| "\r"
+| "\n"
+| "\t"
+}
+
+TOKEN:
+{
+  < CONSTANT: (["0"-"9"])+ >
+| < LPAREN: "(" >
+| < RPAREN: ")" >
+| < IDENTIFIER: (["a"-"z", "A"-"Z"])(["a"-"z", "A"-"Z", "0"-"9"])* >
+}
+
+TOKEN: 
+{
+  < LESS_THAN: "<" >
+| < GREATER_THAN: ">" >
+| < LESS_THAN_EQUAL: "<=" >
+| < GREATER_THAN_EQUAL: ">=" >
+| < EQUAL: "==" >
+| < NOT_EQUAL: "!=" >
+
+|   < OR : "||" >
+| < AND : "&&" >
+| < NOT : "!" >
+| < EQUAL2 : "=" >
+
+| <  AT_SIGN : "@" >
+| <  POUND_SIGN : "#" >
+| <  DOLLAR_SIGN : "$" >
+| <  PERCENT_SIGN : "%" >
+| <  CARET : "^" >
+| <  AMPERSAND : "&" >
+| <  ASTERISK : "*" >
+| <  FORWARD_SLASH : "/" >
+| <  TILDE : "~" >
+| <  QUESTION_MARK : "?" >
+| <  COLON : ":" >
+| <  LEFT_CURLY_BARCE : "{" >
+| <  RIGHT_CURLY_BRACE : "}" >
+| <  DOT : "." >
+| <  COMMA : "," >
+}
+
+int one_line():
+{}
+{
+  relationalExpression() ";"
+  {
+    return 0;
+  }
+  | ";"
+  {
+    return 1;
+  }
+}
+
+void relationalExpression():
+{}
+{
+  additiveExpression() (relationalOperator() additiveExpression())?
+}
+
+void relationalOperator():
+{}
+{
+  <LESS_THAN_EQUAL>
+| <GREATER_THAN_EQUAL>
+| <LESS_THAN>
+| <GREATER_THAN>
+| <EQUAL>
+| <NOT_EQUAL>
+}
+
+void additiveExpression():
+{}
+{
+  multiplicativeExpression()
+}
+
+void multiplicativeExpression():
+{}
+{
+  unaryExpression()
+}
+
+void unaryExpression():
+{}
+{
+  <CONSTANT>
+| <LPAREN> relationalExpression() <RPAREN>
+| <IDENTIFIER>
+}
